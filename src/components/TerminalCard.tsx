@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Github, Linkedin, Mail, ExternalLink } from "lucide-react";
+import SnakeGame from "./SnakeGame";
 
 interface CommandOutput {
   command: string;
@@ -14,11 +15,12 @@ const TerminalCard = () => {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [hasScrolledDown, setHasScrolledDown] = useState(false);
   const [hasMoreBelow, setHasMoreBelow] = useState(false);
+  const [isPlayingSnake, setIsPlayingSnake] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const terminalContentRef = useRef<HTMLDivElement>(null);
 
-  const availableCommands = ["ls", "whoami", "help", "cat about.txt", "cat skills.txt", "cat links.json", "clear"];
+  const availableCommands = ["ls", "whoami", "help", "snake", "cat about.txt", "cat skills.txt", "cat links.json", "clear"];
 
   const socialLinks = [
     {
@@ -88,10 +90,18 @@ const TerminalCard = () => {
             <p className="ml-4">ls - List available files</p>
             <p className="ml-4">whoami - Display user information</p>
             <p className="ml-4">cat [file] - Display file contents</p>
+            <p className="ml-4">snake - Play Snake game</p>
             <p className="ml-4">clear - Clear terminal screen</p>
           </div>
         );
         break;
+
+      case "snake":
+        setInputHistory((prev) => [...prev, trimmedCmd]);
+        setCommandHistory((prev) => [...prev, { command: cmd, output: "" }]);
+        setCurrentCommand("");
+        setIsPlayingSnake(true);
+        return;
 
       case "cat about.txt":
         output = (
@@ -257,42 +267,48 @@ const TerminalCard = () => {
               onClick={handleTerminalClick}
               onScroll={handleScroll}
             >
-            {commandHistory.map((item, index) => (
-              <div key={index} className="mb-3">
-                {item.command && (
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-terminal-green-bright">$</span>
-                    <span className="text-terminal-green">{item.command}</span>
+            {isPlayingSnake ? (
+              <SnakeGame onExit={() => setIsPlayingSnake(false)} />
+            ) : (
+              <>
+                {commandHistory.map((item, index) => (
+                  <div key={index} className="mb-3">
+                    {item.command && (
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-terminal-green-bright">$</span>
+                        <span className="text-terminal-green">{item.command}</span>
+                      </div>
+                    )}
+                    <div className="ml-0">{item.output}</div>
                   </div>
-                )}
-                <div className="ml-0">{item.output}</div>
-              </div>
-            ))}
+                ))}
 
-            {/* Current command line */}
-            <div className="flex items-center gap-2">
-              <span className="text-terminal-green-bright">$</span>
-              <div className="flex-1 relative">
-                <span className="text-terminal-green">{currentCommand}</span>
-                <span
-                  className={`inline-block w-2 h-4 bg-terminal-green align-middle ${
-                    showCursor ? "opacity-100" : "opacity-0"
-                  }`}
-                ></span>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={currentCommand}
-                  onChange={(e) => setCurrentCommand(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="absolute inset-0 w-full opacity-0"
-                  autoFocus
-                  spellCheck={false}
-                />
-              </div>
-            </div>
+                {/* Current command line */}
+                <div className="flex items-center gap-2">
+                  <span className="text-terminal-green-bright">$</span>
+                  <div className="flex-1 relative">
+                    <span className="text-terminal-green">{currentCommand}</span>
+                    <span
+                      className={`inline-block w-2 h-4 bg-terminal-green align-middle ${
+                        showCursor ? "opacity-100" : "opacity-0"
+                      }`}
+                    ></span>
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={currentCommand}
+                      onChange={(e) => setCurrentCommand(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      className="absolute inset-0 w-full opacity-0"
+                      autoFocus
+                      spellCheck={false}
+                    />
+                  </div>
+                </div>
 
-            <div ref={terminalEndRef} />
+                <div ref={terminalEndRef} />
+              </>
+            )}
           </div>
           </div>
         </div>
