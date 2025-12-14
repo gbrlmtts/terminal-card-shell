@@ -15,7 +15,7 @@ const TerminalCard = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
-  const availableCommands = ["ls", "whoami", "cat about.txt", "cat help.txt", "cat skills.txt", "cat links.json", "clear"];
+  const availableCommands = ["ls", "whoami", "help", "cat about.txt", "cat skills.txt", "cat links.json", "clear"];
 
   const socialLinks = [
     {
@@ -64,7 +64,6 @@ const TerminalCard = () => {
         output = (
           <div className="text-terminal-green">
             <p>about.txt</p>
-            <p>help.txt</p>
             <p>skills.txt</p>
             <p>links.json</p>
           </div>
@@ -79,7 +78,7 @@ const TerminalCard = () => {
         );
         break;
 
-      case "cat help.txt":
+      case "help":
         output = (
           <div className="text-terminal-green">
             <p className="font-bold mb-2">Available commands:</p>
@@ -155,7 +154,7 @@ const TerminalCard = () => {
       default:
         output = (
           <div className="text-terminal-green-dim">
-            <p>bash: {cmd}: command not found</p>
+            <p>Unknown command. Try help.</p>
           </div>
         );
         break;
