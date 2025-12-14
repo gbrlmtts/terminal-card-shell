@@ -228,7 +228,7 @@ const TerminalCard = () => {
 
           {/* Terminal Content */}
           <div
-            className="p-6 min-h-[500px] max-h-[600px] overflow-y-auto font-mono text-sm cursor-text scrollbar-none"
+            className="p-6 h-[500px] overflow-y-auto font-mono text-sm cursor-text scrollbar-none"
             onClick={handleTerminalClick}
           >
             {commandHistory.map((item, index) => (
