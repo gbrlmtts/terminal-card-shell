@@ -12,8 +12,10 @@ const TerminalCard = () => {
   const [showCursor, setShowCursor] = useState(true);
   const [inputHistory, setInputHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [hasScrolledDown, setHasScrolledDown] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
+  const terminalContentRef = useRef<HTMLDivElement>(null);
 
   const availableCommands = ["ls", "whoami", "help", "cat about.txt", "cat skills.txt", "cat links.json", "clear"];
 
@@ -209,6 +211,12 @@ const TerminalCard = () => {
     inputRef.current?.focus();
   };
 
+  const handleScroll = () => {
+    if (terminalContentRef.current) {
+      setHasScrolledDown(terminalContentRef.current.scrollTop > 10);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-terminal-bg flex items-center justify-center p-4 scanlines">
       <div className="w-full max-w-3xl">
@@ -227,10 +235,19 @@ const TerminalCard = () => {
           </div>
 
           {/* Terminal Content */}
-          <div
-            className="p-6 h-[500px] overflow-y-auto font-mono text-sm cursor-text scrollbar-none"
-            onClick={handleTerminalClick}
-          >
+          <div className="relative">
+            {/* Scroll indicator - subtle gradient at top */}
+            <div 
+              className={`absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-terminal-bg-lighter to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
+                hasScrolledDown ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+            <div
+              ref={terminalContentRef}
+              className="p-6 h-[500px] overflow-y-auto font-mono text-sm cursor-text scrollbar-none"
+              onClick={handleTerminalClick}
+              onScroll={handleScroll}
+            >
             {commandHistory.map((item, index) => (
               <div key={index} className="mb-3">
                 {item.command && (
@@ -267,6 +284,7 @@ const TerminalCard = () => {
             </div>
 
             <div ref={terminalEndRef} />
+          </div>
           </div>
         </div>
       </div>
