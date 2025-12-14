@@ -13,6 +13,7 @@ const TerminalCard = () => {
   const [inputHistory, setInputHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [hasScrolledDown, setHasScrolledDown] = useState(false);
+  const [hasMoreBelow, setHasMoreBelow] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const terminalContentRef = useRef<HTMLDivElement>(null);
@@ -213,7 +214,9 @@ const TerminalCard = () => {
 
   const handleScroll = () => {
     if (terminalContentRef.current) {
-      setHasScrolledDown(terminalContentRef.current.scrollTop > 10);
+      const { scrollTop, scrollHeight, clientHeight } = terminalContentRef.current;
+      setHasScrolledDown(scrollTop > 10);
+      setHasMoreBelow(scrollTop + clientHeight < scrollHeight - 10);
     }
   };
 
@@ -240,6 +243,12 @@ const TerminalCard = () => {
             <div 
               className={`absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-terminal-bg-lighter to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
                 hasScrolledDown ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+            {/* Scroll indicator - subtle gradient at bottom */}
+            <div 
+              className={`absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-terminal-bg-lighter to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
+                hasMoreBelow ? 'opacity-100' : 'opacity-0'
               }`}
             />
             <div
