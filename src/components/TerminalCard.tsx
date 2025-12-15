@@ -16,6 +16,7 @@ const TerminalCard = () => {
   const [hasScrolledDown, setHasScrolledDown] = useState(false);
   const [hasMoreBelow, setHasMoreBelow] = useState(false);
   const [isPlayingSnake, setIsPlayingSnake] = useState(false);
+  const [snakeHighScore, setSnakeHighScore] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const terminalContentRef = useRef<HTMLDivElement>(null);
@@ -268,7 +269,11 @@ const TerminalCard = () => {
               onScroll={handleScroll}
             >
             {isPlayingSnake ? (
-              <SnakeGame onExit={() => setIsPlayingSnake(false)} />
+              <SnakeGame 
+                onExit={() => setIsPlayingSnake(false)} 
+                highScore={snakeHighScore}
+                onHighScore={setSnakeHighScore}
+              />
             ) : (
               <>
                 {commandHistory.map((item, index) => (
