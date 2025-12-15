@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 
 interface SnakeGameProps {
   onExit: () => void;
+  highScore: number;
+  onHighScore: (score: number) => void;
 }
 
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
@@ -12,7 +14,7 @@ const GRID_WIDTH = 30;
 const GRID_HEIGHT = 15;
 const INITIAL_SPEED = 150;
 
-const SnakeGame = ({ onExit }: SnakeGameProps) => {
+const SnakeGame = ({ onExit, highScore, onHighScore }: SnakeGameProps) => {
   const [snake, setSnake] = useState<Position[]>([{ x: 15, y: 7 }]);
   const [food, setFood] = useState<Position>({ x: 20, y: 7 });
   const [direction, setDirection] = useState<Direction>("RIGHT");
@@ -118,12 +120,20 @@ const SnakeGame = ({ onExit }: SnakeGameProps) => {
           newHead.y >= GRID_HEIGHT
         ) {
           setGameOver(true);
+          const finalScore = prevSnake.length * 10 - 10;
+          if (finalScore > highScore) {
+            onHighScore(finalScore);
+          }
           return prevSnake;
         }
 
         // Check self collision
         if (prevSnake.some((segment) => segment.x === newHead.x && segment.y === newHead.y)) {
           setGameOver(true);
+          const finalScore = prevSnake.length * 10 - 10;
+          if (finalScore > highScore) {
+            onHighScore(finalScore);
+          }
           return prevSnake;
         }
 
@@ -176,7 +186,7 @@ const SnakeGame = ({ onExit }: SnakeGameProps) => {
     <div className="text-terminal-green font-mono">
       <div className="mb-2 flex justify-between">
         <span>SNAKE</span>
-        <span>Score: {score}</span>
+        <span>Score: {score} | High: {highScore}</span>
       </div>
       
       <div className="text-terminal-green-dim text-xs mb-2">
