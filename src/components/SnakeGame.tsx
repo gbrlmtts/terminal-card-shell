@@ -169,21 +169,21 @@ const SnakeGame = ({ onExit, highScore, onHighScore }: SnakeGameProps) => {
   const renderGrid = () => {
     const grid: string[][] = [];
 
-    // Initialize empty grid
+    // Initialize empty grid with dots for consistent spacing
     for (let y = 0; y < GRID_HEIGHT; y++) {
       grid[y] = [];
       for (let x = 0; x < GRID_WIDTH; x++) {
-        grid[y][x] = " ";
+        grid[y][x] = ".";
       }
     }
 
     // Place food
-    grid[food.y][food.x] = "●";
+    grid[food.y][food.x] = "O";
 
     // Place snake
     snake.forEach((segment, index) => {
       if (segment.y >= 0 && segment.y < GRID_HEIGHT && segment.x >= 0 && segment.x < GRID_WIDTH) {
-        grid[segment.y][segment.x] = index === 0 ? "█" : "▓";
+        grid[segment.y][segment.x] = index === 0 ? "@" : "#";
       }
     });
 
@@ -213,11 +213,11 @@ const SnakeGame = ({ onExit, highScore, onHighScore }: SnakeGameProps) => {
               <span
                 key={x}
                 className={
-                  cell === "●"
+                  cell === "O"
                     ? "text-terminal-green-bright"
-                    : cell === "█" || cell === "▓"
+                    : cell === "@" || cell === "#"
                     ? "text-terminal-green"
-                    : ""
+                    : "text-terminal-green-dim opacity-20"
                 }
               >
                 {cell}
