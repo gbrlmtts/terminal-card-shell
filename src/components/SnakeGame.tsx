@@ -13,6 +13,8 @@ const GRID_SIZE = 20;
 const GRID_WIDTH = 30;
 const GRID_HEIGHT = 15;
 const INITIAL_SPEED = 150;
+const MIN_SPEED = 60;
+const SPEED_DECREASE_PER_FOOD = 5;
 
 const SnakeGame = ({ onExit, highScore, onHighScore }: SnakeGameProps) => {
   const [snake, setSnake] = useState<Position[]>([{ x: 15, y: 7 }]);
@@ -89,6 +91,9 @@ const SnakeGame = ({ onExit, highScore, onHighScore }: SnakeGameProps) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [direction, gameOver, onExit, resetGame]);
 
+  // Calculate current speed based on score
+  const currentSpeed = Math.max(MIN_SPEED, INITIAL_SPEED - Math.floor(score / 10) * SPEED_DECREASE_PER_FOOD);
+
   useEffect(() => {
     if (gameOver || isPaused) return;
 
@@ -119,21 +124,25 @@ const SnakeGame = ({ onExit, highScore, onHighScore }: SnakeGameProps) => {
           newHead.y < 0 ||
           newHead.y >= GRID_HEIGHT
         ) {
-          setGameOver(true);
           const finalScore = prevSnake.length * 10 - 10;
-          if (finalScore > highScore) {
-            onHighScore(finalScore);
-          }
+          setTimeout(() => {
+            setGameOver(true);
+            if (finalScore > highScore) {
+              onHighScore(finalScore);
+            }
+          }, 0);
           return prevSnake;
         }
 
         // Check self collision
         if (prevSnake.some((segment) => segment.x === newHead.x && segment.y === newHead.y)) {
-          setGameOver(true);
           const finalScore = prevSnake.length * 10 - 10;
-          if (finalScore > highScore) {
-            onHighScore(finalScore);
-          }
+          setTimeout(() => {
+            setGameOver(true);
+            if (finalScore > highScore) {
+              onHighScore(finalScore);
+            }
+          }, 0);
           return prevSnake;
         }
 
@@ -141,8 +150,10 @@ const SnakeGame = ({ onExit, highScore, onHighScore }: SnakeGameProps) => {
 
         // Check food collision
         if (newHead.x === food.x && newHead.y === food.y) {
-          setScore((prev) => prev + 10);
-          setFood(generateFood());
+          setTimeout(() => {
+            setScore((prev) => prev + 10);
+            setFood(generateFood());
+          }, 0);
         } else {
           newSnake.pop();
         }
@@ -151,9 +162,9 @@ const SnakeGame = ({ onExit, highScore, onHighScore }: SnakeGameProps) => {
       });
     };
 
-    const gameInterval = setInterval(moveSnake, INITIAL_SPEED);
+    const gameInterval = setInterval(moveSnake, currentSpeed);
     return () => clearInterval(gameInterval);
-  }, [direction, food, gameOver, isPaused, generateFood]);
+  }, [direction, food, gameOver, isPaused, generateFood, currentSpeed, highScore, onHighScore]);
 
   const renderGrid = () => {
     const grid: string[][] = [];
